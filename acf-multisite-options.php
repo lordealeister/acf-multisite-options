@@ -49,7 +49,7 @@ class Plugin
 	 */
 	protected function __construct()
 	{
-		add_action( 'acf/init', [$this, 'init'] );
+		\add_action( 'acf/init', [$this, 'init'] );
 	}
 
 	/**
@@ -63,29 +63,29 @@ class Plugin
 			return;
 		}
 
-		$this->_current_site = get_current_site();
+		$this->_current_site = \get_current_site();
 		$acf_admin_options_page = $this->get_acf_admin_options_page();
 
-		if( is_admin() && $acf_admin_options_page ){
+		if( \is_admin() && $acf_admin_options_page ){
 
 			// Run the ACF Options admin_menu function on network menu
-			add_action( 'network_admin_menu', [$acf_admin_options_page, 'admin_menu'], 99, 0 );
+			\add_action( 'network_admin_menu', [$acf_admin_options_page, 'admin_menu'], 99, 0 );
 
 			// Filter out pages by "network" attribute when loading the pages
 			// for the admin_menu depending on the context
-			add_action( 'admin_menu', [$this, 'before_admin_menu'], 1 );
-			add_action( 'network_admin_menu', [$this, 'before_admin_menu'], 1 );
-			add_filter( 'acf/get_options_pages', [$this, 'filter_options_pages'] );
+			\add_action( 'admin_menu', [$this, 'before_admin_menu'], 1 );
+			\add_action( 'network_admin_menu', [$this, 'before_admin_menu'], 1 );
+			\add_filter( 'acf/get_options_pages', [$this, 'filter_options_pages'] );
 
 		}
 
-		add_filter('acf/validate_options_page', [$this, 'capture_network_pages'], 3000 );
-		add_filter('acf/pre_load_post_id', [$this, 'convert_post_id'], 10, 2);
+		\add_filter('acf/validate_options_page', [$this, 'capture_network_pages'], 3000 );
+		\add_filter('acf/pre_load_post_id', [$this, 'convert_post_id'], 10, 2);
 		
 		foreach(['image','relationship','post_object'] as $type){
 			// Wrap some fields with "switch_to_blog()" calls to retrieve images/ posts
-			add_filter( 'acf/format_value/type='.$type, [$this, 'format_value_start'], 1, 3 );
-			add_filter( 'acf/format_value/type='.$type, [$this, 'format_value_end'], 999, 3 );
+			\add_filter( 'acf/format_value/type='.$type, [$this, 'format_value_start'], 1, 3 );
+			\add_filter( 'acf/format_value/type='.$type, [$this, 'format_value_end'], 999, 3 );
 		}
 
 	}
@@ -157,7 +157,7 @@ class Plugin
 		$this->_filter_options_pages = false;
 
 		return array_filter( $pages, function( $page ){
-			return is_network_admin() ? !empty($page['network']) : empty( $page['network'] );
+			return \is_network_admin() ? !empty($page['network']) : empty( $page['network'] );
 		});
 	}
 
@@ -173,7 +173,7 @@ class Plugin
 	 */
 	public function get_options_page_by_post_id( $post_id )
 	{
-		$pages = acf_get_options_pages();
+		$pages = \acf_get_options_pages();
 		foreach( $pages as $page ){
 			if( !empty( $page['post_id'] ) && $page['post_id'] === $post_id ){
 				return $page;
@@ -187,7 +187,7 @@ class Plugin
 		if( substr( $post_id, 0, 5) !== 'site_' ){
 			return $value;
 		}
-		switch_to_blog( get_main_site_id() );
+		\switch_to_blog( \get_main_site_id() );
 		return $value;
 	}
 
@@ -196,7 +196,7 @@ class Plugin
 		if( substr( $post_id, 0, 5) !== 'site_' ){
 			return $value;
 		}
-		restore_current_blog();
+		\restore_current_blog();
 		return $value;
 	}
 
